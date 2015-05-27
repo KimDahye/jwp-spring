@@ -20,6 +20,10 @@
 		p:username="${database.username}" 
 		p:password="${database.password}"
 	/>
+	
+	<bean id="DBInitializer" class="next.dao.DBInitializer"
+		p:dataSource-ref = "dataSource"
+	/>	
 
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" 
 		p:dataSource-ref="dataSource"
