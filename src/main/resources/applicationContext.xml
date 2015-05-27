@@ -23,6 +23,8 @@
 	<bean id="DBInitializer" class="next.dao.DBInitializer"
 		p:dataSource-ref="dataSource" />
 
+	<tx:annotation-driven/>
+	
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
 		p:dataSource-ref="dataSource" />

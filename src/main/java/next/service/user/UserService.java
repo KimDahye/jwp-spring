@@ -15,7 +15,11 @@ import next.service.audit.AuditService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -26,6 +30,10 @@ public class UserService {
 
 	@Resource(name = "auditService")
 	private AuditService auditService;
+	
+	@Autowired
+	private DataSourceTransactionManager transactionManager;
+	
 
 	//private User existedUser;
 
@@ -33,7 +41,9 @@ public class UserService {
 		this.userDao = userDao;
 	}
 
+	@Transactional(propagation=Propagation.REQUIRED)
 	public User join(User user) throws ExistedUserException {
+
 		log.debug("User : {}", user);
 
 		User existedUser = userDao.findByUserId(user.getUserId());
@@ -43,7 +53,9 @@ public class UserService {
 
 		userDao.insert(user);
 		auditService.log(new AuditObject(user.getUserId(), CREATE));
+
 		return user;
+		
 	}
 
 	public User login(String userId, String password) throws PasswordMismatchException {
@@ -68,6 +80,7 @@ public class UserService {
 		return userDao.findByUserId(userId);
 	}
 
+	@Transactional(propagation=Propagation.REQUIRED)
 	public void update(String userId, User updateUser) throws PasswordMismatchException {
 		User existedUser = userDao.findByUserId(userId);
 		if (existedUser == null) {
