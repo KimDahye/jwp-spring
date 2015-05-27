@@ -12,4 +12,7 @@
 * 이 processDispatchResult()에서 qna/list.jsp 를 render 한다.   
 
 ### 9. UserService와 QnaService 중 multi thread에서 문제가 발생할 가능성이 있는 소스는 무엇이며, 그 이유는 무엇인가?
-* 
+* UserService, QnaService 모두 문제가 발생할 가능성이 있다. 
+* 먼저, UserService는 scope가 특별히 지정되어 있지 않으므로, singleton으로 관리된다. 그리고 existedUser는 login 메소드에서 로그인이 성공하면 초기화되게 된다. 그런데 많은 유저가 로그인을 하게 되면, UserService가 싱글톤이므로 가장 마지막에 로그인한 유저의 정보만이 existedUser에 저장된다. 따라서 먼저 로그인한 사람은 로그인을 제대로 했음에도 불구하고 다른 사람의 계정으로 로그인될 수 있다. 따라서 필드에 existedUser를 저장하지 말고, existedUser를 사용하는 메소드 안의 local변수로 existedUser를 저장하면, 문제를 해결할 수 있다.
+* QnaService는 프로토타입 스코프로 설정되어 있지만, QnaService를 주입받는 QnaController는 프로토타입 스코프가 아니므로, QnaService 객체는 요청이 올때마다 새로 만들어지지 않고, 한번만 만들어지게 된다. 따라서 QestionController역시 프로토타입 스코프로 바꿔주어야 QnaService가 요청이 올 때마다 새로 만들어 질 수 있다. 하지만 이 방법은 성능이슈가 있다 따라서 더 좋은 방법으로는, UserService와 마찬가지로 프로토타입 스코프를 쓰지 않고, 필드 변수를 각 메소드의 로컬변수로 바꿔주면 문제를 해결할 수 있다. 
+
