@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import next.model.qna.Question;
+import next.service.qna.ExistedAnotherUserException;
 import next.service.qna.QnaService;
 
 import org.slf4j.Logger;
@@ -78,6 +79,16 @@ public class QuestionController {
 			return "qna/form";
 		}
 		qnaService.update(question, id);
+		return "redirect:/";
+	}
+	
+	@RequestMapping(value="/{id}/delete", method=RequestMethod.GET)
+	public String edit(@PathVariable long id) {
+		try {
+			qnaService.delete(id);
+		} catch (ExistedAnotherUserException e) {
+			return "redirect:/" + id;
+		}
 		return "redirect:/";
 	}
 }
